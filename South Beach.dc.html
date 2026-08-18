@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#10243A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="South Beach">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<script>
+  /* Skipped inside the design preview iframe so the editor never serves stale cached files. */
+  if ("serviceWorker" in navigator && window.top === window.self) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function () {});
+    });
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Poiret+One&family=Josefin+Sans:wght@600;700&family=Cinzel:wght@700;900&family=Monoton&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--void, #0B1B2C); overscroll-behavior: none; }
+  body { font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; }
+  * { box-sizing: border-box; }
+  a { color: var(--teal, #0E7C7B); }
+  a:hover { color: var(--ink, #10243A); }
+  input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+  ::selection { background: var(--accent, #F2A007); color: var(--ink, #10243A); }
+  @keyframes sunrise {
+    0% { transform: translateY(46px) scale(0.86); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes riseIn {
+    0% { transform: translateY(14px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(242,160,7,0.0); }
+    55% { box-shadow: 0 0 44px 10px rgba(242,160,7,0.22); }
+  }
+  /* Flamingo mode — Miami Vice night. Same layout, new everything else. */
+  [data-theme="vice"] {
+    --void: #0E0022;
+    --bg: #1A0736;
+    --card: #2A0B4E;
+    --line: #7A2E92;
+    --ink: #F8EAFF;
+    --accent: #FF3D8B;
+    --teal: #22E4DC;
+    --muted: #C9A0E8;
+    --faint: #9A6DC4;
+    --press: #3A1265;
+    --ride: #FFB627;
+    --r: 11px;
+    --cardR: 0px;
+    --listBg: transparent;
+    --cardFill: rgba(30,6,58,0.62);
+    --cardBlur: blur(11px) saturate(150%);
+    --listPadBottom: 230px;
+    --stretch: 128%;
+    --track: 0.012em;
+    --skew: skewX(-9deg);
+    --glow: 0 0 18px rgba(255,61,139,0.55), 0 0 44px rgba(34,228,220,0.28);
+    --headerBg: linear-gradient(168deg, #2B0446 0%, #6C1163 46%, #C42A6E 78%, #FF6B3D 100%);
+    --headerFg: #FFF3FA;
+    --eyebrow: #FFD9EC;
+    --navBg: linear-gradient(180deg, #3A0B5C 0%, #1A0736 100%);
+    --navLine: #7A2E92;
+    --navDim: rgba(255,243,250,0.62);
+    --splashBg: linear-gradient(168deg, #2B0446 0%, #6C1163 52%, #C42A6E 100%);
+    --onAccent: #17032B;
+    --cardShadow: 0 0 0 1px rgba(122,46,146,0.55), 0 8px 26px rgba(14,0,34,0.5);
+    --cardShadowOpen: 0 0 0 1px rgba(255,61,139,0.55), 0 10px 30px rgba(14,0,34,0.6);
+    --pillBg: rgba(42,11,78,0.92);
+    --pillFg: #F8EAFF;
+    --fadeTop: rgba(26,7,54,0.9);
+    --fadeBottom: rgba(26,7,54,0);
+    --attrFg: #E9D4FA;
+    --popShadow: 0 8px 26px rgba(14,0,34,0.6), 0 0 0 1px rgba(255,61,139,0.35);
+    --baseRing: rgba(255,61,139,0.34);
+    --pinShadow: rgba(14,0,34,0.7);
+    --teal2: rgba(34,228,220,0.62);
+    --teal3: rgba(34,228,220,0.34);
+  }
+  /* solid navy sits under the gradient so a theme swap never exposes the shell behind it */
+  [data-el="header"], [data-el="nav"], [data-el="splash"] { background-color: var(--chromeBase, #10243A); transition: color 0.5s ease; }
+  [data-el="header"]::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 9px; z-index: 1;
+    background: repeating-linear-gradient(to bottom, #22E4DC 0 2px, transparent 2px 4px);
+    opacity: 0; transition: opacity 0.55s ease; pointer-events: none;
+  }
+  [data-theme="vice"] [data-el="header"]::after { opacity: 0.85; }
+  [data-theme="vice"] [data-el="bird"] { animation: flap 0.72s cubic-bezier(0.2,0.8,0.2,1); filter: drop-shadow(0 0 12px rgba(255,61,139,0.75)); }
+  [data-theme="vice"] map-view .leaflet-tile-pane { filter: invert(0.92) hue-rotate(188deg) saturate(1.45) brightness(0.95) contrast(1.08); }
+  [data-theme="vice"] map-view .leaflet-bar a { background: #2A0B4E; color: #F8EAFF; }
+  @keyframes flap {
+    0% { transform: rotate(0) scale(1); }
+    30% { transform: rotate(-14deg) scale(1.16); }
+    62% { transform: rotate(8deg) scale(1.05); }
+    100% { transform: rotate(0) scale(1); }
+  }
+  @keyframes ghostOut { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes letterInA { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes letterInB { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="min-height: 100dvh; background: var(--void, #0B1B2C); display: flex; justify-content: center; transition: background 0.55s ease;">
+  <div data-el="shell" style="position: relative; width: 100%; max-width: 460px; height: 100dvh; background: var(--bg, #E6EFEC); color: var(--ink, #10243A); font-size: 16px; line-height: 1.5; display: flex; flex-direction: column; overflow: hidden;">
+
+    <sc-if value="{{ splashUp }}" hint-placeholder-val="{{ true }}">
+      <div data-el="splash" onClick="{{ skipSplash }}" style="position: absolute; inset: 0; z-index: 90; background: var(--splashBg, #10243A); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; cursor: pointer; transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1); opacity: {{ splashOpacity }};">
+        <div style="position: relative; width: 132px; height: 132px; border-radius: 50%; overflow: hidden; background: var(--accent, #F2A007); animation: sunrise 1.05s cubic-bezier(0.16,1,0.3,1) both, glow 2.4s ease-in-out 0.5s both;">
+          <span style="position: absolute; left: 0; right: 0; top: 77px; display: flex; flex-direction: column; gap: 6px;">
+            <i style="display: block; height: 10px; background: var(--ink, #10243A);"></i>
+            <i style="display: block; height: 7px; margin-top: 2px; background: var(--ink, #10243A);"></i>
+            <i style="display: block; height: 5px; margin-top: 1px; background: var(--ink, #10243A);"></i>
+          </span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+          <span style="width: 168px; height: 7px; background: var(--teal, #0E7C7B); animation: riseIn 0.5s cubic-bezier(0.16,1,0.3,1) 0.5s both;"></span>
+          <span style="width: 124px; height: 7px; background: var(--teal2, #17605F); animation: riseIn 0.5s cubic-bezier(0.16,1,0.3,1) 0.62s both;"></span>
+          <span style="width: 78px; height: 7px; background: var(--teal3, #1B4B4C); animation: riseIn 0.5s cubic-bezier(0.16,1,0.3,1) 0.74s both;"></span>
+        </div>
+        <div style="text-align: center; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.86s both;">
+          <p style="font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; font-weight: 800; font-stretch: 118%; font-size: 30px; line-height: 0.95; letter-spacing: 0.01em; text-transform: uppercase; color: var(--headerFg, #FBFAF6); margin: 0;">South Beach</p>
+          <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent, #F2A007); margin: 12px 0 0;">1330 Ocean Drive</p>
+        </div>
+      </div>
+    </sc-if>
+
+    <div role="dialog" aria-modal="true" aria-label="Add to home screen" onClick="{{ closeInfo }}" style="position: absolute; inset: 0; z-index: 80; display: flex; align-items: flex-end; background: rgba(11,27,44,0.62); transition: opacity 0.32s cubic-bezier(0.2,0.8,0.2,1), visibility 0.32s; opacity: {{ infoOpacity }}; visibility: {{ infoVisible }}; pointer-events: {{ infoEvents }};">
+      <div onClick="{{ stop }}" style="width: 100%; max-height: 88%; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--bg, #E6EFEC); border-top: 3px solid var(--accent, #F2A007); border-radius: var(--cardR, var(--r, 3px)) var(--cardR, var(--r, 3px)) 0 0; padding: 22px 20px 26px; transition: transform 0.38s cubic-bezier(0.2,0.9,0.25,1); transform: {{ infoSheet }};">
+
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 18px;">
+          <div>
+            <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal, #0E7C7B); margin: 0 0 7px;">Keep it handy</p>
+            <p style="font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; font-weight: 800; font-stretch: 112%; font-size: 25px; line-height: 1.0; letter-spacing: -0.005em; text-transform: uppercase; color: var(--ink, #10243A); margin: 0;">Add to home screen</p>
+          </div>
+          <button type="button" onClick="{{ closeInfo }}" aria-label="Close" style="flex: 0 0 auto; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid var(--line, #C9D8D3); border-radius: 50%; color: var(--muted, #52687D); font-size: 17px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.18s cubic-bezier(0.2,0.8,0.2,1), border-color 0.24s ease, color 0.24s ease;" style-active="transform: scale(0.9);" style-hover="border-color: var(--ink, #10243A); color: var(--ink, #10243A);">×</button>
+        </div>
+
+        <p style="font-size: 14px; line-height: 1.55; color: var(--muted, #52687D); margin: 0 0 18px; text-wrap: pretty;">Installed, it opens full screen with no browser bars — and the places list keeps working without a signal.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <sc-for list="{{ guides }}" as="g" hint-placeholder-count="2">
+            <div style="background: var(--card, #FBFAF6); border: 1px solid var(--line, #C9D8D3); border-left: 3px solid {{ g.accent }}; border-radius: var(--cardR, var(--r, 3px)); padding: 16px;">
+              <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink, #10243A); margin: 0 0 4px;">{{ g.os }}</p>
+              <p style="font-size: 12.5px; color: var(--faint, #93A5B4); margin: 0 0 13px;">{{ g.browser }}</p>
+              <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step;">
+                <sc-for list="{{ g.steps }}" as="s" hint-placeholder-count="3">
+                  <li style="display: flex; gap: 11px; align-items: flex-start;">
+                    <span style="flex: 0 0 auto; width: 19px; height: 19px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: {{ g.accent }}; color: var(--card, #FBFAF6); font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; margin-top: 1px;">{{ s.n }}</span>
+                    <span style="flex: 1 1 auto; font-size: 14px; line-height: 1.45; color: var(--ink, #10243A); text-wrap: pretty;">{{ s.text }}</span>
+                  </li>
+                </sc-for>
+              </ol>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line, #C9D8D3);">
+          <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint, #93A5B4); margin: 0 0 4px;">After the trip</p>
+          <p style="font-size: 14px; line-height: 1.5; color: var(--muted, #52687D); margin: 0 0 13px; text-wrap: pretty;">Taking it off your home screen removes the app and its saved list.</p>
+          <dl style="display: flex; flex-direction: column; gap: 10px; margin: 0;">
+            <sc-for list="{{ removals }}" as="r" hint-placeholder-count="2">
+              <div style="display: flex; gap: 12px; font-size: 13.5px;">
+                <dt style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink, #10243A); flex: 0 0 74px; padding-top: 2px; margin: 0;">{{ r.os }}</dt>
+                <dd style="margin: 0; flex: 1 1 auto; line-height: 1.45; color: var(--muted, #52687D); text-wrap: pretty;">{{ r.text }}</dd>
+              </div>
+            </sc-for>
+          </dl>
+        </div>
+
+        <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint, #93A5B4); text-align: center; margin: 20px 0 0;">1330 Ocean Drive · {{ tripCount }} places</p>
+
+      </div>
+    </div>
+
+    <header data-el="header" style="position: relative; background: #10243A; color: var(--headerFg, #FBFAF6); padding: 12px 20px; flex: 0 0 auto; z-index: 30;">
+      <span aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(168deg, #2B0446 0%, #6C1163 46%, #C42A6E 78%, #FF6B3D 100%); transition: opacity 0.55s cubic-bezier(0.2,0.8,0.2,1); opacity: {{ viceFade }};"></span>
+      <div style="position: relative; display: flex; align-items: center; gap: 2px;">
+        <button type="button" onClick="{{ onFlamingo }}" aria-label="Flamingo mode" style="flex: 0 0 auto; margin-left: -20px; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1);" style-active="transform: scale(0.92) rotate(-4deg);">
+          <img data-el="bird" src="flamingo.png" alt="" style="width: clamp(42px, 12.6vw, 58px); height: clamp(42px, 12.6vw, 58px); object-fit: contain; display: block;">
+        </button>
+        <div style="position: relative; flex: 1 1 auto; min-width: 0;">
+          <div>
+            <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--eyebrow, #F2A007); margin: 0 0 8px; padding-right: 30px; white-space: nowrap; pointer-events: none;">Miami Beach · Art Deco District</p>
+            <h1 style="font-family: {{ titleFam }}; font-weight: {{ titleWeight }}; font-stretch: {{ titleStretch }}; font-size: {{ titleSize }}; letter-spacing: {{ titleTrack }}; line-height: 0.92; text-transform: uppercase; margin: 0; white-space: nowrap; display: inline-block; transform: var(--skew, none); text-shadow: var(--glow, none);"><sc-for list="{{ letters }}" as="l" hint-placeholder-count="11"><span style="display: inline-block; white-space: pre; animation: {{ l.anim }};">{{ l.ch }}</span></sc-for></h1>
+          </div>
+          <sc-if value="{{ ghostUp }}" hint-placeholder-val="{{ false }}">
+            <div aria-hidden="true" style="position: absolute; left: 0; top: 0; right: 0; pointer-events: none; animation: ghostOut 0.5s ease forwards;">
+              <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 8px; padding-right: 30px; white-space: nowrap; color: {{ ghostEyebrow }};">Miami Beach · Art Deco District</p>
+              <h1 style="font-family: {{ ghostFam }}; font-weight: {{ ghostWeight }}; font-stretch: {{ ghostStretch }}; font-size: {{ ghostSize }}; letter-spacing: {{ ghostTrack }}; line-height: 0.92; text-transform: uppercase; margin: 0; white-space: nowrap; display: inline-block; color: {{ ghostFg }}; transform: {{ ghostSkew }}; text-shadow: {{ ghostGlow }}; animation: ghostOut 0.26s ease forwards;">South Beach</h1>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+      <button type="button" onClick="{{ openInfo }}" aria-label="How to install this app" style="position: absolute; top: 10px; right: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.18s cubic-bezier(0.2,0.8,0.2,1);" style-active="transform: scale(0.9);">
+        <span style="display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--accent, #F2A007); color: var(--accent, #F2A007); font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 11px; line-height: 1; padding-bottom: 1px; transition: background 0.24s ease, color 0.24s ease;" style-hover="background: var(--accent, #F2A007); color: var(--ink, #10243A);">i</span>
+      </button>
+    </header>
+
+    <sc-if value="{{ isOffline }}" hint-placeholder-val="{{ false }}">
+      <p style="background: var(--accent, #F2A007); color: var(--onAccent, #10243A); font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; padding: 8px 20px; margin: 0; flex: 0 0 auto;">Offline — showing saved data</p>
+    </sc-if>
+
+    <div style="flex: 0 0 auto; background: var(--bg, #E6EFEC); border-bottom: 1px solid var(--line, #C9D8D3); padding: 12px 20px 0; z-index: 20; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.2,0.8,0.2,1), opacity 0.28s ease, padding 0.4s cubic-bezier(0.2,0.8,0.2,1); max-height: {{ filterMax }}; opacity: {{ filterOpacity }}; padding-top: {{ filterPadTop }};">
+      <div role="group" aria-label="Filter by category" style="display: flex; gap: 7px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none;">
+        <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="5">
+          <button type="button" aria-pressed="{{ chip.pressed }}" onClick="{{ chip.onClick }}" style="flex: 0 0 auto; font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 100px; padding: 7px 14px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; transition: background 0.24s cubic-bezier(0.2,0.8,0.2,1), color 0.24s ease, border-color 0.24s ease, transform 0.16s cubic-bezier(0.2,0.8,0.2,1); border: 1px solid {{ chip.line }}; background: {{ chip.bg }}; color: {{ chip.fg }};" style-active="transform: scale(0.94);">
+            {{ chip.label }}<span style="margin-left: 6px; opacity: 0.55;">{{ chip.count }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <main style="position: relative; flex: 1 1 auto; overflow: hidden;">
+
+      <sc-if value="{{ palmsUp }}" hint-placeholder-val="{{ false }}">
+        <div aria-hidden="true" style="position: absolute; inset: 0; z-index: 0; pointer-events: none; transition: opacity 0.36s cubic-bezier(0.2,0.8,0.2,1); opacity: {{ palmsOpacity }};">
+          <div style="position: absolute; left: 0; right: 0; bottom: 0; aspect-ratio: 1200 / 624; background-image: url(palm-sky.jpg); background-repeat: no-repeat; background-position: bottom center; background-size: cover; opacity: 0.9; mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.28) 16%, rgba(0,0,0,0.72) 34%, #000 56%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.28) 16%, rgba(0,0,0,0.72) 34%, #000 56%);"></div>
+        </div>
+      </sc-if>
+
+      <section data-screen-label="List" ref="{{ listRef }}" style="position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--listBg, var(--bg, #E6EFEC)); transition: opacity 0.36s cubic-bezier(0.2,0.8,0.2,1), transform 0.36s cubic-bezier(0.2,0.8,0.2,1); opacity: {{ listOpacity }}; transform: {{ listTransform }}; pointer-events: {{ listEvents }}; z-index: {{ listZ }};">
+        <p style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint, #93A5B4); padding: 16px 20px 8px; margin: 0;">{{ tally }}</p>
+        <ul style="list-style: none; margin: 0; padding: 0 20px var(--listPadBottom, 34px); display: flex; flex-direction: column; gap: 10px;">
+          <sc-for list="{{ items }}" as="p" hint-placeholder-count="6">
+            <li data-el="card" style="background: var(--cardFill, var(--card, #FBFAF6)); backdrop-filter: var(--cardBlur, none); -webkit-backdrop-filter: var(--cardBlur, none); border: 1px solid var(--line, #C9D8D3); border-radius: var(--cardR, var(--r, 3px)); overflow: hidden; transition: {{ p.trans }}; transition-delay: {{ p.delay }}; border-left: 3px solid {{ p.accent }}; opacity: {{ p.fade }}; transform: {{ p.rise }}; box-shadow: {{ p.shadow }};">
+              <button type="button" aria-expanded="{{ p.open }}" onClick="{{ p.onToggle }}" style="width: 100%; display: block; text-align: left; background: none; border: 0; padding: 14px 15px; cursor: pointer; font-family: inherit; color: inherit; -webkit-tap-highlight-color: transparent; transition: background 0.2s ease;" style-active="background: var(--press, #F3F1E9);">
+                <span style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint, #93A5B4); margin-bottom: 6px;">
+                  <span>{{ p.eyebrow }}</span>
+                  <span style="display: block; width: 7px; height: 7px; border-right: 1.5px solid var(--faint, #93A5B4); border-bottom: 1.5px solid var(--faint, #93A5B4); transition: transform 0.32s cubic-bezier(0.2,0.8,0.2,1); transform: {{ p.caret }};"></span>
+                </span>
+                <span style="display: block; font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-stretch: 108%; font-size: 19px; line-height: 1.14; letter-spacing: -0.004em; margin: 0 0 3px;">{{ p.name }}</span>
+                <span style="display: block; font-size: 13px; color: var(--muted, #52687D); margin: 0;">{{ p.address }}</span>
+                <span style="display: flex; align-items: center; gap: 9px; margin-top: 11px;">
+                  <span style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--ink, #10243A); white-space: nowrap; flex: 0 0 auto;">{{ p.travel }}</span>
+                  <span style="display: flex; flex-direction: column; gap: 2px; flex: 0 0 auto; transition: width 0.4s cubic-bezier(0.2,0.8,0.2,1); width: {{ p.speedline }};">
+                    <i style="display: block; height: 1.5px; background: var(--ink, #10243A); opacity: 0.34;"></i>
+                    <i style="display: block; height: 1.5px; background: var(--ink, #10243A); opacity: 0.22;"></i>
+                    <i style="display: block; height: 1.5px; background: var(--ink, #10243A); opacity: 0.12;"></i>
+                  </span>
+                  <span style="flex: 1 1 auto; height: 1px; background: var(--line, #C9D8D3);"></span>
+                </span>
+              </button>
+
+              <div style="overflow: hidden; transition: max-height 0.42s cubic-bezier(0.2,0.8,0.2,1), opacity 0.32s ease; max-height: {{ p.bodyMax }}; opacity: {{ p.bodyOpacity }};">
+                <div style="padding: 14px 15px 15px; border-top: 1px solid var(--line, #C9D8D3);">
+                  <p style="font-size: 14.5px; line-height: 1.55; color: var(--ink, #10243A); margin: 0 0 13px; text-wrap: pretty;">{{ p.note }}</p>
+                  <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px;">
+                    <sc-for list="{{ p.tips }}" as="tip" hint-placeholder-count="2">
+                      <span style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal, #0E7C7B); border: 1px solid var(--teal, #0E7C7B); border-radius: 100px; padding: 3px 9px;">{{ tip }}</span>
+                    </sc-for>
+                  </div>
+                  <dl style="display: flex; flex-direction: column; gap: 5px; margin: 0 0 14px;">
+                    <sc-for list="{{ p.meta }}" as="row" hint-placeholder-count="3">
+                      <div style="display: flex; gap: 10px; font-size: 13px;">
+                        <dt style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint, #93A5B4); flex: 0 0 78px; padding-top: 3px; margin: 0;">{{ row.label }}</dt>
+                        <dd style="margin: 0; color: var(--muted, #52687D); flex: 1 1 auto;">{{ row.value }}</dd>
+                      </div>
+                    </sc-for>
+                  </dl>
+                  <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+                    <a href="{{ p.directions }}" target="_blank" rel="noopener" style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--card, #FBFAF6); background: var(--ink, #10243A); border: 1px solid var(--ink, #10243A); border-radius: var(--r, 3px); padding: 9px 13px; font-weight: 500; transition: transform 0.16s cubic-bezier(0.2,0.8,0.2,1);" style-active="transform: scale(0.95);">Directions</a>
+                    <button type="button" onClick="{{ p.onShowOnMap }}" style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink, #10243A); background: transparent; border: 1px solid var(--ink, #10243A); border-radius: var(--r, 3px); padding: 9px 13px; font-weight: 500; cursor: pointer; transition: transform 0.16s cubic-bezier(0.2,0.8,0.2,1);" style-active="transform: scale(0.95);">On map</button>
+                    <sc-if value="{{ p.phone }}" hint-placeholder-val="{{ false }}">
+                      <a href="{{ p.tel }}" style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--ink, #10243A); background: transparent; border: 1px solid var(--ink, #10243A); border-radius: var(--r, 3px); padding: 9px 13px; font-weight: 500;">Call</a>
+                    </sc-if>
+                    <sc-if value="{{ p.web }}" hint-placeholder-val="{{ false }}">
+                      <a href="{{ p.web }}" target="_blank" rel="noopener" style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--ink, #10243A); background: transparent; border: 1px solid var(--ink, #10243A); border-radius: var(--r, 3px); padding: 9px 13px; font-weight: 500;">Website</a>
+                    </sc-if>
+                    <button type="button" aria-pressed="{{ p.done }}" onClick="{{ p.onDone }}" style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; border-radius: var(--r, 3px); padding: 9px 13px; cursor: pointer; font-weight: 500; transition: background 0.24s ease, color 0.24s ease, border-color 0.24s ease, transform 0.16s cubic-bezier(0.2,0.8,0.2,1); border: 1px solid {{ p.doneLine }}; background: {{ p.doneBg }}; color: {{ p.doneFg }};" style-active="transform: scale(0.95);">{{ p.doneLabel }}</button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </sc-for>
+        </ul>
+
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 40px 20px 60px; text-align: center; color: var(--muted, #52687D);">
+            <p style="font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-stretch: 112%; font-size: 20px; text-transform: uppercase; color: var(--ink, #10243A); margin: 0 0 7px;">{{ emptyTitle }}</p>
+            <p style="margin: 0; font-size: 14px;">{{ emptyBody }}</p>
+            <sc-if value="{{ showRetry }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ onRetry }}" style="margin-top: 18px; font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--accent, #F2A007); color: var(--onAccent, #10243A); border: 0; border-radius: var(--r, 11px); padding: 11px 20px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.18s cubic-bezier(0.2,0.8,0.2,1);" style-active="transform: scale(0.95);">Try again</button>
+            </sc-if>
+          </div>
+        </sc-if>
+      </section>
+
+      <section data-screen-label="Map" style="position: absolute; inset: 0; background: var(--bg, #E6EFEC); transition: opacity 0.36s cubic-bezier(0.2,0.8,0.2,1), transform 0.36s cubic-bezier(0.2,0.8,0.2,1); opacity: {{ mapOpacity }}; transform: {{ mapTransform }}; pointer-events: {{ mapEvents }}; z-index: {{ mapZ }};">
+        <x-import component-from-global-scope="map-view" from="./map-view.js" hint-size="100%,100%"></x-import>
+        <div style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 700; pointer-events: none; height: 54px; background: linear-gradient(to top, var(--fadeTop, rgba(230,239,236,0.85)), var(--fadeBottom, rgba(230,239,236,0)));"></div>
+        <p style="position: absolute; left: 12px; top: 12px; z-index: 700; margin: 0; font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pillFg, #10243A); background: var(--pillBg, rgba(251,250,246,0.92)); border: 1px solid var(--line, #C9D8D3); border-radius: 100px; padding: 6px 11px;">{{ mapTally }}</p>
+      </section>
+
+    </main>
+
+    <nav data-el="nav" style="position: relative; flex: 0 0 auto; background: #10243A; border-top: 1px solid var(--navLine, rgba(251,250,246,0.14)); display: flex; z-index: 40; padding-bottom: env(safe-area-inset-bottom);">
+      <span aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, #3A0B5C 0%, #1A0736 100%); transition: opacity 0.55s cubic-bezier(0.2,0.8,0.2,1); opacity: {{ viceFade }};"></span>
+      <span style="position: absolute; z-index: 1; top: 0; left: 0; width: 33.3333%; height: 2px; background: var(--accent, #F2A007); transition: transform 0.36s cubic-bezier(0.2,0.8,0.2,1); transform: {{ indicator }};"></span>
+
+      <button type="button" onClick="{{ goList }}" aria-pressed="{{ onList }}" style="position: relative; z-index: 1; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 7px; background: none; border: 0; padding: 12px 0 13px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.18s cubic-bezier(0.2,0.8,0.2,1), opacity 0.28s ease; opacity: {{ listNavOpacity }};" style-active="transform: scale(0.92);">
+        <span style="display: flex; flex-direction: column; gap: 3px; width: 20px;">
+          <i style="display: block; height: 2.5px; width: 100%; transition: background 0.28s ease; background: {{ listNavColor }};"></i>
+          <i style="display: block; height: 2.5px; width: 72%; transition: background 0.28s ease; background: {{ listNavColor }};"></i>
+          <i style="display: block; height: 2.5px; width: 86%; transition: background 0.28s ease; background: {{ listNavColor }};"></i>
+        </span>
+        <span style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.28s ease; color: {{ listNavColor }};">List</span>
+      </button>
+
+      <button type="button" onClick="{{ goMap }}" aria-pressed="{{ onMap }}" style="position: relative; z-index: 1; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 7px; background: none; border: 0; padding: 12px 0 13px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.18s cubic-bezier(0.2,0.8,0.2,1), opacity 0.28s ease; opacity: {{ mapNavOpacity }};" style-active="transform: scale(0.92);">
+        <span style="display: flex; align-items: center; justify-content: center; width: 20px; height: 15px;">
+          <i style="display: block; width: 13px; height: 13px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); transition: background 0.28s ease; background: {{ mapNavColor }};"></i>
+        </span>
+        <span style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.28s ease; color: {{ mapNavColor }};">Map</span>
+      </button>
+
+      <button type="button" onClick="{{ goBase }}" aria-pressed="{{ onBase }}" style="position: relative; z-index: 1; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 7px; background: none; border: 0; padding: 12px 0 13px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.18s cubic-bezier(0.2,0.8,0.2,1), opacity 0.28s ease; opacity: {{ baseNavOpacity }};" style-active="transform: scale(0.92);">
+        <span style="display: flex; align-items: center; justify-content: center; width: 20px; height: 15px;">
+          <i style="display: block; width: 12px; height: 12px; border-radius: 50%; transition: background 0.28s ease, box-shadow 0.28s ease; background: {{ baseNavColor }}; box-shadow: {{ baseNavRing }};"></i>
+        </span>
+        <span style="font-family: 'DM Mono', ui-monospace, Menlo, monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.28s ease; color: {{ baseNavColor }};">Base</span>
+      </button>
+    </nav>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:900},&quot;titleFont&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Limelight&quot;,&quot;options&quot;:[&quot;Limelight&quot;,&quot;Poiret One&quot;,&quot;Josefin Sans&quot;,&quot;Cinzel&quot;,&quot;Monoton&quot;,&quot;Archivo (current)&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Header&quot;},&quot;showSplash&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Start screen&quot;},&quot;splashSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2.1,&quot;min&quot;:1,&quot;max&quot;:5,&quot;step&quot;:0.1,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Start screen&quot;}}">
+class Component extends DCLogic {
+  state = {
+    data: null, tab: "list", active: "all",
+    expanded: {}, visited: {}, offline: false, error: false, info: false, vice: false,
+    splash: "in"
+  };
+
+  componentDidMount() {
+    try {
+      const raw = window.localStorage.getItem("sobe.visited.v1");
+      if (raw) this.setState({ visited: JSON.parse(raw) });
+      if (window.localStorage.getItem("sobe.vice.v1") === "1") this.setState({ vice: true });
+    } catch (e) {}
+
+    this.loadPlaces(0);
+
+    this.sync = () => this.setState({ offline: !navigator.onLine });
+    window.addEventListener("online", this.sync);
+    window.addEventListener("offline", this.sync);
+    this.sync();
+
+    this.onKey = e => this.handleKey(e);
+    window.addEventListener("keydown", this.onKey);
+
+    if (this.props.showSplash === false) {
+      this.setState({ splash: "gone" });
+    } else {
+      const hold = (this.props.splashSeconds || 2.1) * 1000;
+      this.t1 = setTimeout(() => this.skip(), hold);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("online", this.sync);
+    window.removeEventListener("offline", this.sync);
+    window.removeEventListener("keydown", this.onKey);
+    clearTimeout(this.t1); clearTimeout(this.t2); clearTimeout(this.t3);
+    clearTimeout(this._cardTimer); clearTimeout(this._textTimer); clearTimeout(this._loadGuard);
+  }
+
+  componentDidUpdate() {
+    const el = document.querySelector("map-view");
+    if (!el) return;
+    const tab = this.state.tab;
+    const ids = this.visible().map(p => p.id);
+    const key = ids.join(",");
+    if (key !== this.lastKey) {
+      this.lastKey = key;
+      if (el.setVisible) el.setVisible(ids);
+    }
+    if (tab !== this.lastTab && (tab === "map" || tab === "base")) {
+      clearTimeout(this.t3);
+      this.t3 = setTimeout(() => {
+        if (el.refresh) el.refresh();
+        if (tab === "base" && el.focusBase) el.focusBase(true);
+        if (tab === "map" && el.fitAll) el.fitAll();
+      }, 380);
+    }
+    this.lastTab = tab;
+  }
+
+  handleKey(e) {
+    if (e.key === "Escape" && this.state.info) this.setState({ info: false });
+  }
+
+  skip() {
+    if (this.state.splash === "gone") return;
+    this.setState({ splash: "out" });
+    clearTimeout(this.t2);
+    this.t2 = setTimeout(() => this.setState({ splash: "gone" }), 580);
+  }
+
+  saveVisited(visited) {
+    this.setState({ visited });
+    try { window.localStorage.setItem("sobe.visited.v1", JSON.stringify(visited)); } catch (e) {}
+  }
+
+  accent(cat) {
+    return { eat: "var(--teal, #0E7C7B)", drink: "var(--accent, #F2A007)", do: "var(--ink, #10243A)", ride: "var(--ride, #D64545)" }[cat] || "var(--teal, #0E7C7B)";
+  }
+
+  label(id) {
+    const cats = (this.state.data && this.state.data.categories) || [];
+    const found = cats.find(c => c.id === id);
+    return found ? found.label : id;
+  }
+
+  travel(p) {
+    if (p.drive) return p.drive + " min drive";
+    if (p.walk === 0) return "Ride there";
+    if (p.walk >= 20) return p.walk + " min walk · or ride";
+    return p.walk + " min walk";
+  }
+
+  speedline(p) {
+    const minutes = p.drive ? p.drive + 8 : p.walk;
+    const capped = Math.min(Math.max(minutes, 1), 26);
+    return Math.round(14 + (capped / 26) * 96) + "px";
+  }
+
+  directions(p) {
+    if (p.lat && p.lng) return "https://www.google.com/maps/dir/?api=1&destination=" + p.lat + "," + p.lng;
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(p.name + " " + p.address);
+  }
+
+  // One silent retry, then a watchdog so a hung fetch surfaces the error panel
+  // instead of leaving the list on "loading" forever.
+  loadPlaces(attempt) {
+    clearTimeout(this._loadGuard);
+    this._loadGuard = setTimeout(() => {
+      if (!this.state.data) {
+        if (attempt < 1) this.loadPlaces(attempt + 1);
+        else this.setState({ error: true });
+      }
+    }, attempt < 1 ? 4000 : 4000);
+
+    fetch("places.json", { cache: attempt ? "reload" : "no-cache" })
+      .then(r => { if (!r.ok) throw new Error("bad response"); return r.json(); })
+      .then(data => { clearTimeout(this._loadGuard); this.setState({ data, error: false }); })
+      .catch(() => {
+        clearTimeout(this._loadGuard);
+        if (attempt < 1) this._loadGuard = setTimeout(() => this.loadPlaces(attempt + 1), 900);
+        else this.setState({ error: true });
+      });
+  }
+
+  retryLoad() {
+    this.setState({ error: false });
+    this.loadPlaces(0);
+  }
+
+  // The wordmark fades out whole (ghost layer), then rebuilds letter by letter, S first.
+  // Alternating keyframe names is what restarts the run on each toggle — one render, no rAF.
+  titleLetters() {
+    const name = this._letterAlt ? "letterInB" : "letterInA";
+    return "South Beach".split("").map((ch, i) => ({
+      ch: ch,
+      anim: this._swapped
+        ? name + " 2.8s cubic-bezier(0.19,1,0.22,1) " + (0.28 + i * 0.03).toFixed(3) + "s both"
+        : "none"
+    }));
+  }
+
+  visible() {
+    const d = this.state.data;
+    if (!d) return [];
+    return d.places
+      .filter(p => this.state.active === "all" || p.category === this.state.active)
+      .sort((a, b) => (a.drive ? a.drive + 40 : a.walk) - (b.drive ? b.drive + 40 : b.walk));
+  }
+
+  showOnMap(id) {
+    this.setState({ tab: "map" });
+    setTimeout(() => {
+      const el = document.querySelector("map-view");
+      if (el && el.refresh) el.refresh();
+      if (el && el.focus) el.focus(id);
+    }, 420);
+  }
+
+  // Frozen snapshot of the outgoing title's type + colors, so the old wordmark can
+  // sit on top and dissolve out while the new one is already fading in behind it.
+  ghostType(wasVice) {
+    const t = wasVice ? (this.titleFonts()[this.props.titleFont] || this.titleFonts()["Limelight"]) : this.titleFonts()["Archivo (current)"];
+    return Object.assign({}, t, {
+      stretch: wasVice ? t.stretch.replace("var(--stretch, 118%)", "128%") : "118%",
+      track: wasVice ? t.track.replace("var(--track, -0.008em)", "0.012em") : "-0.008em",
+      skew: wasVice ? "skewX(-9deg)" : "none",
+      glow: wasVice ? "0 0 18px rgba(255,61,139,0.55), 0 0 44px rgba(34,228,220,0.28)" : "none",
+      fg: wasVice ? "#FFF3FA" : "#FBFAF6",
+      eyebrow: wasVice ? "#FFD9EC" : "#F2A007"
+    });
+  }
+
+  titleFonts() {
+    return {
+      "Archivo (current)": { fam: "Archivo, 'Helvetica Neue', Arial, sans-serif", weight: 800, stretch: "var(--stretch, 118%)", size: "clamp(26px, 7.4vw, 34px)", track: "var(--track, -0.008em)" },
+      "Limelight": { fam: "Limelight, Archivo, sans-serif", weight: 400, stretch: "normal", size: "clamp(29px, 8.1vw, 38px)", track: "0.04em" },
+      "Poiret One": { fam: "'Poiret One', Archivo, sans-serif", weight: 400, stretch: "normal", size: "clamp(26px, 7.2vw, 34px)", track: "0.1em" },
+      "Josefin Sans": { fam: "'Josefin Sans', Archivo, sans-serif", weight: 700, stretch: "normal", size: "clamp(28px, 7.8vw, 36px)", track: "0.05em" },
+      "Cinzel": { fam: "Cinzel, Archivo, serif", weight: 900, stretch: "normal", size: "clamp(24px, 6.6vw, 31px)", track: "0.03em" },
+      "Monoton": { fam: "Monoton, Archivo, sans-serif", weight: 400, stretch: "normal", size: "clamp(21px, 5.9vw, 28px)", track: "0.02em" }
+    };
+  }
+
+  titleType() {
+    const fonts = this.titleFonts();
+    if (!this.state.vice) return fonts["Archivo (current)"];
+    return fonts[this.props.titleFont] || fonts["Limelight"];
+  }
+
+  // Hold the cards hidden until the list's own slide-in transform has finished —
+  // a transformed ancestor suppresses backdrop-filter, so blurring only settles at the end.
+  enterList() {
+    this.scrollListTop();
+    if (this.state.tab === "list") return;
+    clearTimeout(this._cardTimer);
+    this._cardsIn = false;
+    this.setState({ tab: "list" });
+    this._cardTimer = setTimeout(() => {
+      this._cardsIn = true;
+      this.forceUpdate();
+    }, 370);
+  }
+
+  scrollListTop() {
+    const el = this._listEl;
+    if (el) el.scrollTop = 0;
+  }
+
+  renderVals() {
+    const d = this.state.data;
+    const tab = this.state.tab;
+    const onMap = tab === "map";
+    const onBase = tab === "base";
+    const mapUp = onMap || onBase;
+    const places = d ? d.places : [];
+    const visible = this.visible();
+
+    const counts = {};
+    places.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
+    const chipDefs = [{ id: "all", label: "All", count: places.length }].concat(
+      (d ? d.categories : []).map(c => ({ id: c.id, label: c.label, count: counts[c.id] || 0 }))
+    );
+    const chips = chipDefs.map(c => {
+      const on = this.state.active === c.id;
+      return {
+        label: c.label, count: c.count, pressed: on,
+        bg: on ? "var(--ink, #10243A)" : "transparent",
+        fg: on ? "var(--card, #FBFAF6)" : "var(--muted, #52687D)",
+        line: on ? "var(--ink, #10243A)" : "var(--line, #C9D8D3)",
+        onClick: () => { this.setState({ active: c.id }); this.scrollListTop(); }
+      };
+    });
+
+    const cardsIn = this._cardsIn !== false;
+    const items = visible.map((p, i) => {
+      const open = this.state.expanded[p.id] === true;
+      const done = this.state.visited[p.id] === true;
+      const meta = [];
+      if (p.hours) meta.push({ label: "Hours", value: p.hours });
+      if (p.price) meta.push({ label: "Price", value: p.price });
+      meta.push({ label: "From base", value: this.travel(p) });
+      return {
+        name: p.name, address: p.address, note: p.note, tips: p.tips || [], meta,
+        eyebrow: this.label(p.category) + (done ? (this.state.vice ? " · Been there" : " · Visited") : ""),
+        accent: this.accent(p.category),
+        fade: cardsIn ? (done ? 0.56 : 1) : 0,
+        rise: cardsIn ? "translateY(0)" : "translateY(16px)",
+        trans: !cardsIn
+          ? "none"
+          : (this._ghost
+            ? "opacity 0.34s ease, transform 0.42s cubic-bezier(0.16,1,0.3,1), box-shadow 0s"
+            : "opacity 0.34s ease, transform 0.42s cubic-bezier(0.16,1,0.3,1), box-shadow 0.85s cubic-bezier(0.2,0.8,0.2,1)"),
+        delay: cardsIn ? Math.min(i, 7) * 48 + "ms" : "0ms",
+        shadow: (!cardsIn || !!this._ghost)
+          ? "0 0 0 0 rgba(0,0,0,0)"
+          : (open ? "var(--cardShadowOpen, 0 6px 18px rgba(16,36,58,0.10))" : "var(--cardShadow, 0 0 0 rgba(16,36,58,0))"),
+        travel: this.travel(p),
+        speedline: this.speedline(p),
+        directions: this.directions(p),
+        phone: !!p.phone,
+        tel: p.phone ? "tel:" + p.phone.replace(/[^0-9+]/g, "") : "",
+        web: p.web || false,
+        open, done,
+        caret: open ? "rotate(-135deg)" : "rotate(45deg)",
+        bodyMax: open ? "760px" : "0px",
+        bodyOpacity: open ? 1 : 0,
+        doneLabel: done ? "Been there" : "Mark visited",
+        doneBg: done ? "var(--teal, #0E7C7B)" : "transparent",
+        doneFg: done ? "var(--card, #FBFAF6)" : "var(--ink, #10243A)",
+        doneLine: done ? "var(--teal, #0E7C7B)" : "var(--ink, #10243A)",
+        onToggle: () => this.setState(s => ({ expanded: Object.assign({}, s.expanded, { [p.id]: !s.expanded[p.id] }) })),
+        onDone: () => this.saveVisited(Object.assign({}, this.state.visited, { [p.id]: !this.state.visited[p.id] })),
+        onShowOnMap: () => this.showOnMap(p.id)
+      };
+    });
+
+    return {
+      baseName: (d && d.base && d.base.name) || "1330 Ocean Drive",
+      isOffline: this.state.offline,
+      chips, items,
+      palmsUp: this.state.vice,
+      palmsOpacity: tab === "list" ? 1 : 0,
+
+      titleFam: this.titleType().fam,
+      titleWeight: this.titleType().weight,
+      titleStretch: this.titleType().stretch,
+      titleSize: this.titleType().size,
+      titleTrack: this.titleType().track,
+
+      theme: this.state.vice ? "vice" : "deco",
+      onFlamingo: () => {
+        const vice = !this.state.vice;
+        clearTimeout(this._textTimer);
+        this._ghost = this.ghostType(this.state.vice);
+        this._swapped = true;
+        this._letterAlt = !this._letterAlt;
+        this.setState({ vice });
+        this._textTimer = setTimeout(() => { this._ghost = null; this.forceUpdate(); }, 560);
+        try { window.localStorage.setItem("sobe.vice.v1", vice ? "1" : "0"); } catch (e) {}
+      },
+      letters: this.titleLetters(),
+      ghostUp: !!this._ghost,
+      ghostFam: this._ghost ? this._ghost.fam : "inherit",
+      ghostWeight: this._ghost ? this._ghost.weight : 400,
+      ghostStretch: this._ghost ? this._ghost.stretch : "normal",
+      ghostSize: this._ghost ? this._ghost.size : "1rem",
+      ghostTrack: this._ghost ? this._ghost.track : "normal",
+      ghostSkew: this._ghost ? this._ghost.skew : "none",
+      ghostGlow: this._ghost ? this._ghost.glow : "none",
+      ghostFg: this._ghost ? this._ghost.fg : "inherit",
+      ghostEyebrow: this._ghost ? this._ghost.eyebrow : "inherit",
+      viceFade: this.state.vice ? 1 : 0,
+      openInfo: () => this.setState({ info: true }),
+      closeInfo: () => this.setState({ info: false }),
+      stop: e => e.stopPropagation(),
+      infoOpacity: this.state.info ? 1 : 0,
+      infoVisible: this.state.info ? "visible" : "hidden",
+      infoEvents: this.state.info ? "auto" : "none",
+      infoSheet: this.state.info ? "translateY(0)" : "translateY(102%)",
+      tripCount: places.length,
+      guides: [
+        {
+          os: "iPhone & iPad", browser: "Safari", accent: "var(--teal, #0E7C7B)",
+          steps: [
+            { n: 1, text: "Open this page in Safari — Chrome on iOS can't install it." },
+            { n: 2, text: "Tap the Share button in the bottom bar (square with an arrow)." },
+            { n: 3, text: "Scroll down and tap Add to Home Screen." },
+            { n: 4, text: "Tap Add. The sun icon lands on your home screen." }
+          ]
+        },
+        {
+          os: "Android", browser: "Chrome", accent: "var(--accent, #F2A007)",
+          steps: [
+            { n: 1, text: "Open this page in Chrome." },
+            { n: 2, text: "Tap the ⋮ menu at the top right." },
+            { n: 3, text: "Tap Add to Home screen, then Install." },
+            { n: 4, text: "Chrome may also show an Install banner — either works." }
+          ]
+        }
+      ],
+      removals: [
+        { os: "iPhone & iPad", text: "Touch and hold the sun icon, tap Remove App, then Delete App." },
+        { os: "Android", text: "Touch and hold the icon, drag it to Uninstall — or long-press, tap ⓘ, then Uninstall." }
+      ],
+
+      splashUp: this.state.splash !== "gone",
+      splashOpacity: this.state.splash === "out" ? 0 : 1,
+      skipSplash: () => this.skip(),
+
+      filterMax: onBase ? "0px" : "62px",
+      filterOpacity: onBase ? 0 : 1,
+      filterPadTop: onBase ? "0px" : "12px",
+
+      listOpacity: mapUp ? 0 : 1,
+      listTransform: mapUp ? "translateY(10px) scale(0.995)" : "translateY(0) scale(1)",
+      listEvents: mapUp ? "none" : "auto",
+      listZ: mapUp ? 1 : 2,
+      mapOpacity: mapUp ? 1 : 0,
+      mapTransform: mapUp ? "translateY(0) scale(1)" : "translateY(10px) scale(0.995)",
+      mapEvents: mapUp ? "auto" : "none",
+      mapZ: mapUp ? 2 : 1,
+
+      indicator: onBase ? "translateX(200%)" : onMap ? "translateX(100%)" : "translateX(0)",
+      onList: tab === "list", onMap, onBase,
+      listRef: el => { this._listEl = el; },
+      goList: () => this.enterList(),
+      goMap: () => this.setState({ tab: "map" }),
+      goBase: () => this.setState({ tab: "base" }),
+      listNavColor: tab === "list" ? "var(--accent, #F2A007)" : "var(--navDim, rgba(251,250,246,0.55))",
+      mapNavColor: onMap ? "var(--accent, #F2A007)" : "var(--navDim, rgba(251,250,246,0.55))",
+      baseNavColor: onBase ? "var(--accent, #F2A007)" : "var(--navDim, rgba(251,250,246,0.55))",
+      baseNavRing: onBase ? "0 0 0 3px rgba(242,160,7,0.28)" : "0 0 0 0 rgba(242,160,7,0)",
+      listNavOpacity: tab === "list" ? 1 : 0.8,
+      mapNavOpacity: onMap ? 1 : 0.8,
+      baseNavOpacity: onBase ? 1 : 0.8,
+
+      tally: d ? (visible.length + (visible.length === 1 ? " place" : " places") + " · nearest first") : "loading",
+      mapTally: onBase
+        ? ((d && d.base && d.base.address) || "1330 Ocean Dr")
+        : visible.length + (this.state.vice ? " pinned · base in pink" : " pinned · base in amber"),
+      isEmpty: this.state.error || (!!d && visible.length === 0),
+      showRetry: this.state.error,
+      onRetry: () => this.retryLoad(),
+      emptyTitle: this.state.error ? "Data did not load" : "Nothing here",
+      emptyBody: this.state.error
+        ? "places.json could not be read. Check that it sits next to the app and reload."
+        : "No places in this category yet. Tap All to see everything."
+    };
+  }
+}
+
+</script>
+</body>
+</html>
