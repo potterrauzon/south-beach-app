@@ -1,6 +1,6 @@
 /* South Beach — offline shell.
    Bump CACHE when any precached file changes; the old cache is dropped on activate. */
-var CACHE = "sobe-v11";
+var CACHE = "sobe-v12";
 
 /* Relative URLs so the worker works from a repo subpath on GitHub Pages. */
 var SHELL = [
