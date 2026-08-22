@@ -729,7 +729,9 @@ class Component extends DCLogic {
       onRetry: () => this.retryLoad(),
       emptyTitle: this.state.error ? "Data did not load" : "Nothing here",
       emptyBody: this.state.error
-        ? "places.json could not be read. Check that it sits next to the app and reload."
+        ? (location.protocol === "file:"
+          ? "You're opening this file directly, and browsers block local data loads from a file:// address. Serve this folder over a local server (e.g. “python3 -m http.server”) or use the deployed URL instead."
+          : "places.json could not be read. Check that it sits next to the app and reload.")
         : "No places in this category yet. Tap All to see everything."
     };
   }
